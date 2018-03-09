@@ -11,9 +11,7 @@ import org.apache.hadoop.io.*;
 import org.apache.hadoop.mapreduce.*;
 
 import java.util.StringTokenizer;
-
 import org.apache.hadoop.fs.FileSystem;
-
 import java.io.IOException;
 
 /* For Custom Data Type */
