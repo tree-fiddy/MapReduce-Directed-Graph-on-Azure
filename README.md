@@ -1,4 +1,7 @@
 # MapReduce Directed Graph on Azure
+
+## Dependencies
+This program runs on Cloudera's CDH 5.18 distribution.  It also requires a few packages (which I haven't looked into... I just received them and went along with it).
 ## Objective
 Using a TSV with 2 columns (Source and Target), calculating out-degree and in-degree of nodes.
 
