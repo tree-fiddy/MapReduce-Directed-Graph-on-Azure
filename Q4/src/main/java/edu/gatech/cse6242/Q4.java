@@ -152,6 +152,10 @@ public class Q4 extends Configured implements Tool {
             extends Mapper<Object, Text, IntWritable, IntWritable> {
         private final static IntWritable one = new IntWritable(1);
 
+        /* TODO:  Fix this portion so that multiple key-value pairs are assigned in a single map step
+        https://cse6242x.slack.com/archives/C9FDU9JLV/p1520620873000223?thread_ts=1520571250.000130&cid=C9FDU9JLV
+
+         */
         public void map(Object key, Text value, Context context
         ) throws IOException, InterruptedException {
             StringTokenizer itr = new StringTokenizer(value.toString());
