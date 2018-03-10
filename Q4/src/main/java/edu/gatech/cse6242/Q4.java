@@ -128,17 +128,20 @@ public class Q4 extends Configured {
         ) throws IOException, InterruptedException {
             StringTokenizer itr = new StringTokenizer(value.toString());
             while (itr.hasMoreTokens()) {
-                IntWritable node = new IntWritable(Integer.parseInt(itr.nextToken()));
-                context.write(node, one);
+                IntWritable source = new IntWritable(Integer.parseInt(itr.nextToken()));
+                IntWritable target = new IntWritable(Integer.parseInt(itr.nextToken()));
+
+                context.write(source, one);
+                context.write(target, one);
             }
         }
     }
 
     public static class NodeDegreeReducer1
-            extends Reducer<IntWritable, IntWritable, IntWritable, IntWritable> {
+            extends Reducer<Object, IntWritable, Object, IntWritable> {
         private IntWritable result = new IntWritable();
 
-        public void reduce(IntWritable key, Iterable<IntWritable> values,
+        public void reduce(Object key, Iterable<IntWritable> values,
                            Context context
         ) throws IOException, InterruptedException {
             int sum = 0;
