@@ -1,4 +1,4 @@
-package edu.gatech.cse6242;
+﻿package edu.gatech.cse6242;
 //http://unmeshasreeveni.blogspot.com/2014/04/chaining-jobs-in-hadoop-mapreduce.html;
 //https://stackoverflow.com/questions/38111700/chaining-of-mapreduce-jobs
 // MapReduce Difference in Count:
@@ -20,17 +20,12 @@ import java.io.DataOutput;
 
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
-
-
 /* ADDED FOR CHAINING MR JOBS */
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.input.SequenceFileInputFormat;
-import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
-import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
-
-public class Q4 extends Configured {
+import org.apache.hadoop.util.Tool;
+import org.apache.hadoop.util.ToolRunner;
+public class Q4 extends Configured implements Tool {
     public static void main(String[] args) throws Exception
     {
         Configuration conf = new Configuration();
@@ -40,6 +35,13 @@ public class Q4 extends Configured {
             /*If exist delete the output path*/
             fs.delete(new Path(OUTPUT_PATH),true);
         }
+        ToolRunner.run(conf, new Q4(), args);
+    } //end main
+
+    public int run(String[] args) throws Exception {
+        Configuration conf = new Configuration();
+        FileSystem fs = FileSystem.get(conf);
+
         Job job1 = Job.getInstance(conf, "Job1");
         job1.setJarByClass(Q4.class);
         job1.setMapperClass(NodeDegreeMapper1.class);
@@ -48,8 +50,8 @@ public class Q4 extends Configured {
         job1.setOutputKeyClass(IntWritable.class);
         job1.setOutputValueClass(IntWritable.class);
         FileInputFormat.addInputPath(job1, new Path(args[0]));
-        FileOutputFormat.setOutputPath(job1, new Path(args[1]));
-        System.exit(job1.waitForCompletion(true) ? 0 : 1);
+        FileOutputFormat.setOutputPath(job1, new Path(OUTPUT_PATH));
+        job1.waitForCompletion(true);
 
         Job job2 = Job.getInstance(conf, "Job2");
         job2.setJarByClass(Q4.class);
@@ -58,11 +60,11 @@ public class Q4 extends Configured {
         job2.setReducerClass(NodeDegreeReducer2.class);
         job2.setOutputKeyClass(IntWritable.class);
         job2.setOutputValueClass(IntWritable.class);
-        FileInputFormat.addInputPath(job2, new Path(args[0]));
+        FileInputFormat.addInputPath(job2, new Path(OUTPUT_PATH));
         FileOutputFormat.setOutputPath(job2, new Path(args[1]));
-        System.exit(job2.waitForCompletion(true) ? 0 : 1);
-    } //end main
-        //end main
+        return job2.waitForCompletion(true) ? 0 : 1;
+    }
+    //end main
 
     private static final String OUTPUT_PATH = "./intermediate_output";
 
@@ -118,12 +120,8 @@ public class Q4 extends Configured {
     // Begin First Mapper
     public static class NodeDegreeMapper1
             extends Mapper<Object, Text, IntWritable, IntWritable> {
-        private final static IntWritable one = new IntWritable(1);
+        private  static IntWritable one = new IntWritable(1);
 
-        /* TODO:  Fix this portion so that multiple key-value pairs are assigned
-        https://cse6242x.slack.com/archives/C9FDU9JLV/p1520620873000223?thread_ts=1520571250.000130&cid=C9FDU9JLV
-        This may be helpful, but didn't look: https://stackoverflow.com/questions/15734154/how-java-hadoop-mapper-can-send-multiple-values
-         */
         public void map(Object key, Text value, Context context
         ) throws IOException, InterruptedException {
             StringTokenizer itr = new StringTokenizer(value.toString());
@@ -132,7 +130,7 @@ public class Q4 extends Configured {
                 IntWritable target = new IntWritable(Integer.parseInt(itr.nextToken()));
 
                 context.write(source, one);
-                context.write(target, one);
+                context.write(target, new IntWritable(-1));
             }
         }
     }
@@ -155,17 +153,18 @@ public class Q4 extends Configured {
 
 
     public static class NodeDegreeMapper2
-            extends Mapper<LongWritable, Text, IntWritable, IntWritable> { 
+            extends Mapper<LongWritable, Text, IntWritable, IntWritable> {
         private final static IntWritable one = new IntWritable(1);
 
-        public void map(LongWritable offset, Text lineText, Context context)
+        public void map(LongWritable key, Text value, Context context)
                 throws IOException, InterruptedException {
-            // split each line on tab and save to array
-            String line = lineText.toString();
-            String[] line_array = line.split("\t");
-            int occurrence = Integer.parseInt(line_array[1]);
-            context.write(new IntWritable(occurrence), one);
-        } // end map
+            StringTokenizer itr = new StringTokenizer(value.toString());
+            while (itr.hasMoreTokens()) {
+                IntWritable source = new IntWritable(Integer.parseInt(itr.nextToken()));
+                IntWritable target = new IntWritable(Integer.parseInt(itr.nextToken()));
+                context.write(target, one);
+            }
+        }
     } // end SecondMapper
 
 
