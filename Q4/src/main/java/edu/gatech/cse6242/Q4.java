@@ -29,11 +29,8 @@ import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
-import org.apache.hadoop.util.Tool;
-import org.apache.hadoop.util.ToolRunner;
 
-
-public class Q4 extends Configured implements Tool {
+public class Q4 extends Configured {
     public static void main(String[] args) throws Exception
     {
         Configuration conf = new Configuration();
@@ -65,35 +62,6 @@ public class Q4 extends Configured implements Tool {
         FileOutputFormat.setOutputPath(job2, new Path(args[1]));
         System.exit(job2.waitForCompletion(true) ? 0 : 1);
     } //end main
-
-//	@Override
-	public int run(String[] args) throws Exception {
-        Configuration conf = new Configuration();
-        FileSystem fs = FileSystem.get(conf);
-
-        Job job1 = Job.getInstance(conf, "Job1");
-        job1.setJarByClass(Q4.class);
-        job1.setMapperClass(NodeDegreeMapper1.class);
-        job1.setCombinerClass(NodeDegreeReducer1.class);
-        job1.setReducerClass(NodeDegreeReducer1.class);
-        job1.setOutputKeyClass(IntWritable.class);
-        job1.setOutputValueClass(IntWritable.class);
-        job1.setOutputFormatClass(SequenceFileOutputFormat.class);
-        FileInputFormat.addInputPath(job1, new Path(args[0]));
-        FileOutputFormat.setOutputPath(job1, new Path(OUTPUT_PATH));
-        job1.waitForCompletion(true);
-
-        Job job2 = Job.getInstance(conf, "Job2");
-        job2.setJarByClass(Q4.class);
-        job2.setMapperClass(NodeDegreeMapper2.class);
-        job2.setCombinerClass(NodeDegreeReducer2.class);
-        job2.setReducerClass(NodeDegreeReducer2.class);
-        job2.setOutputKeyClass(IntWritable.class);
-        job2.setOutputValueClass(IntWritable.class);
-        FileInputFormat.addInputPath(job2, new Path(OUTPUT_PATH));
-        FileOutputFormat.setOutputPath(job2, new Path(args[1]));
-        return job2.waitForCompletion(true) ? 0 : 1;
-    }
         //end main
 
     private static final String OUTPUT_PATH = "./intermediate_output";
@@ -152,9 +120,9 @@ public class Q4 extends Configured implements Tool {
             extends Mapper<Object, Text, IntWritable, IntWritable> {
         private final static IntWritable one = new IntWritable(1);
 
-        /* TODO:  Fix this portion so that multiple key-value pairs are assigned in a single map step
+        /* TODO:  Fix this portion so that multiple key-value pairs are assigned
         https://cse6242x.slack.com/archives/C9FDU9JLV/p1520620873000223?thread_ts=1520571250.000130&cid=C9FDU9JLV
-
+        This may be helpful, but didn't look: https://stackoverflow.com/questions/15734154/how-java-hadoop-mapper-can-send-multiple-values
          */
         public void map(Object key, Text value, Context context
         ) throws IOException, InterruptedException {
