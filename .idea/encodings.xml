@@ -2,5 +2,6 @@
 <project version="4">
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/Q4" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Q4/src/main/java/edu/gatech/cse6242/Q4.java" charset="UTF-8" />
   </component>
 </project>
