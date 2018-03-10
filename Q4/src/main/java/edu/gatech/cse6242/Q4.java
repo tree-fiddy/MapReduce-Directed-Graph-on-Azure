@@ -1,4 +1,4 @@
-﻿package edu.gatech.cse6242;
+package edu.gatech.cse6242;
 //http://unmeshasreeveni.blogspot.com/2014/04/chaining-jobs-in-hadoop-mapreduce.html;
 //https://stackoverflow.com/questions/38111700/chaining-of-mapreduce-jobs
 // MapReduce Difference in Count:
