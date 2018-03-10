@@ -138,10 +138,10 @@ public class Q4 extends Configured {
     }
 
     public static class NodeDegreeReducer1
-            extends Reducer<Object, IntWritable, Object, IntWritable> {
+            extends Reducer<IntWritable, IntWritable, IntWritable, IntWritable> {
         private IntWritable result = new IntWritable();
 
-        public void reduce(Object key, Iterable<IntWritable> values,
+        public void reduce(IntWritable key, Iterable<IntWritable> values,
                            Context context
         ) throws IOException, InterruptedException {
             int sum = 0;
